@@ -1,6 +1,5 @@
 const fs = require('fs').promises;
 const path = require('path');
-
 const contactsPath = path.resolve('./models/contacts.json');
 
 const listContacts = async () => {
@@ -30,7 +29,7 @@ const addContact = async (name, email, phone) => {
   const data = await fs.readFile(contactsPath, 'utf8');
   const parsedData = JSON.parse(data);
 
-  const newContact = { name, email, phone, id: String(parsedData.length + 1) };
+  const newContact = { name, email, phone, id: String(Date.now()) };
   parsedData.push(newContact);
   fs.writeFile(contactsPath, JSON.stringify(parsedData));
   return newContact;
