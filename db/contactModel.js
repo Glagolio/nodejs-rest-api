@@ -19,7 +19,7 @@ const contactSchema = new mongoose.Schema({
   favorite: Boolean,
 });
 
-const Contact = mongoose.model('Contacts', contactSchema);
+const Contact = mongoose.model('contacts', contactSchema);
 
 module.exports = {
   Contact,
