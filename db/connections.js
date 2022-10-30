@@ -9,6 +9,7 @@ const mongoConnect = async () => {
     console.log('Database connection successful');
   } catch (err) {
     console.log(err);
+    process.exit(1);
   }
 };
 

@@ -5,7 +5,6 @@ const { Contact } = require('../db/contactModel');
 
 const listContacts = async () => {
   const data = await Contact.find({});
-  console.log(process.env.MONGO_URL);
   return data;
 };
 const getContactById = async contactId => {
