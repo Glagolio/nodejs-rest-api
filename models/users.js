@@ -1,24 +1,30 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { User } = require('../db/userModel');
-const { NotAuthorizedError } = require('../helpers/apiHelpers');
+const { RegistrationConflictError, LoginAuthError } = require('../helpers/errors');
 
 const signupUser = async (email, password) => {
+  if (await User.findOne({ email })) {
+    throw new RegistrationConflictError('Email is use');
+  }
+
   const user = new User({
     email,
     password,
   });
+
   await user.save();
+  return user;
 };
 const loginUser = async (email, password) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new NotAuthorizedError(`No user with email ${email} found`);
+    throw new LoginAuthError('Email or password is wrong');
   }
 
   if (!(await bcrypt.compare(password, user.password))) {
-    throw new NotAuthorizedError(`Wrong password or email`);
+    throw new LoginAuthError('Email or password is wrong');
   }
 
   const toket = jwt.sign(

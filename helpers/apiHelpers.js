@@ -1,3 +1,5 @@
+const { RegistrationConflictError } = require('./errors');
+
 const asyncWrapper = controller => {
   return (req, res, next) => {
     controller(req, res).catch(next);
@@ -5,15 +7,18 @@ const asyncWrapper = controller => {
 };
 
 const errorHandler = (err, req, res, next) => {
+  if (err instanceof RegistrationConflictError) {
+    return res.status(err.status).json({ message: err.message });
+  }
   res.status(500).json({ message: err.message });
 };
 
-const NotAuthorizedError = (err, req, res, next) => {
-  res.status(401).json({ message: err.message });
+const registrationConflictError = (err, req, res, next) => {
+  res.status(409).json({ message: err.message });
 };
 
 module.exports = {
   asyncWrapper,
   errorHandler,
-  NotAuthorizedError,
+  registrationConflictError,
 };
