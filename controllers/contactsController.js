@@ -8,7 +8,8 @@ const {
 } = require('../models/contacts');
 
 const listContactsController = async (req, res) => {
-  const contacts = await listContacts();
+  const { _id } = req.user;
+  const contacts = await listContacts(_id);
   res.status(200).json({ message: 'success', code: 200, contacts });
 };
 
@@ -24,12 +25,14 @@ const getContactByIdController = async (req, res) => {
 };
 
 const addContactValidationController = async (req, res) => {
+  const { _id } = req.user;
+
   const { name, email, phone, favorite } = req.body;
   if (!name || !email || !phone) {
     res.status(400).json({ message: 'missing required name field' });
     return;
   }
-  const contact = await addContact(name, email, phone, favorite);
+  const contact = await addContact(name, email, phone, favorite, _id);
   res.status(201).json({ message: 'contact added', contact });
 };
 

@@ -14,14 +14,20 @@ const {
   updateStatusContactController,
 } = require('../../controllers/contactsController');
 const { asyncWrapper } = require('../../helpers/apiHelpers');
+const { authMiddleware } = require('../../middlewares/authMiddleware');
 
 const router = express.Router();
 
-router.get('/', asyncWrapper(listContactsController));
+router.get('/', authMiddleware, asyncWrapper(listContactsController));
 
 router.get('/:contactId', isValidId, asyncWrapper(getContactByIdController));
 
-router.post('/', addContactValidation, asyncWrapper(addContactValidationController));
+router.post(
+  '/',
+  authMiddleware,
+  addContactValidation,
+  asyncWrapper(addContactValidationController)
+);
 
 router.delete('/:contactId', isValidId, asyncWrapper(removeContactController));
 

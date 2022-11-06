@@ -1,4 +1,4 @@
-const { RegistrationConflictError } = require('./errors');
+const { RegistrationConflictError, LoginAuthError } = require('./errors');
 
 const asyncWrapper = controller => {
   return (req, res, next) => {
@@ -7,7 +7,7 @@ const asyncWrapper = controller => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  if (err instanceof RegistrationConflictError) {
+  if (err instanceof RegistrationConflictError || err instanceof LoginAuthError) {
     return res.status(err.status).json({ message: err.message });
   }
   res.status(500).json({ message: err.message });
