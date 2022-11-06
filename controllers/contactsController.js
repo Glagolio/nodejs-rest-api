@@ -32,7 +32,7 @@ const addContactValidationController = async (req, res) => {
     res.status(400).json({ message: 'missing required name field' });
     return;
   }
-  const contact = await addContact(name, email, phone, favorite, _id);
+  const contact = await addContact({ name, email, phone, favorite }, _id);
   res.status(201).json({ message: 'contact added', contact });
 };
 
