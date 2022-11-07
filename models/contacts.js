@@ -1,34 +1,46 @@
 const { Contact } = require('../db/contactModel');
 
-const listContacts = async userId => {
-  const data = await Contact.find({ userId });
+const listContacts = async (owner, page, limit) => {
+  const skip = (parseInt(page) - 1) * parseInt(limit);
+  const data = await Contact.find({ owner }).skip(skip).limit(parseInt(limit));
+
   return data;
 };
-const getContactById = async contactId => {
-  const data = await Contact.findById(contactId);
+const getContactById = async (contactId, owner) => {
+  const data = await Contact.find({ $and: [{ owner }, { _id: contactId }] });
   return data;
 };
 
-const removeContact = async contactId => {
-  const data = await Contact.findByIdAndRemove(contactId);
+const removeContact = async (contactId, owner) => {
+  const data = await Contact.findOneAndRemove({ $and: [{ owner }, { _id: contactId }] });
   return data;
 };
 
-const addContact = async ({ name, email, phone, favorite }, contactId) => {
-  const contact = new Contact({ name, email, phone, favorite, contactId });
+const addContact = async ({ name, email, phone, favorite }, owner) => {
+  const contact = new Contact({ name, email, phone, favorite, owner });
   const newContact = await contact.save();
   return newContact;
 };
 
-const updateContact = async (contactId, body) => {
-  await Contact.findByIdAndUpdate(contactId, { $set: body }, { runValidators: true });
-  const updatedContact = Contact.findById(contactId);
+const updateContact = async (contactId, owner, body) => {
+  await Contact.findOneAndUpdate(
+    { $and: [{ owner }, { _id: contactId }] },
+    { $set: body },
+    { runValidators: true }
+  );
+
+  const updatedContact = await Contact.find({ $and: [{ owner }, { _id: contactId }] });
 
   return updatedContact;
 };
-const updateStatusContact = async (contactId, favorite) => {
-  await Contact.findByIdAndUpdate(contactId, { favorite }, { runValidators: true });
-  const updatedContact = Contact.findById(contactId);
+
+const updateStatusContact = async (contactId, owner, favorite) => {
+  await Contact.findOneAndUpdate(
+    { $and: [{ owner }, { _id: contactId }] },
+    { favorite },
+    { runValidators: true }
+  );
+  const updatedContact = await Contact.find({ $and: [{ owner }, { _id: contactId }] });
 
   return updatedContact;
 };

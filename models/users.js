@@ -27,14 +27,16 @@ const loginUser = async (email, password) => {
     throw new LoginAuthError('Email or password is wrong');
   }
 
-  const toket = jwt.sign(
+  const token = jwt.sign(
     {
       _id: user._id,
     },
     process.env.JWT_SECRET
   );
 
-  return toket;
+  await User.findByIdAndUpdate(user._id, { token }, { runValidators: true });
+
+  return token;
 };
 
 module.exports = {

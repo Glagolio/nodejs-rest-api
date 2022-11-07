@@ -20,10 +20,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  // owner: {
-  //   type: SchemaTypes.ObjectId,
-  //   ref: 'user',
-  // },
 });
 
 userSchema.pre('save', async function () {

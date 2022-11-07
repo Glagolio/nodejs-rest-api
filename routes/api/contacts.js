@@ -18,16 +18,13 @@ const { authMiddleware } = require('../../middlewares/authMiddleware');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, asyncWrapper(listContactsController));
+router.use(authMiddleware);
+
+router.get('/', asyncWrapper(listContactsController));
 
 router.get('/:contactId', isValidId, asyncWrapper(getContactByIdController));
 
-router.post(
-  '/',
-  authMiddleware,
-  addContactValidation,
-  asyncWrapper(addContactValidationController)
-);
+router.post('/', addContactValidation, asyncWrapper(addContactValidationController));
 
 router.delete('/:contactId', isValidId, asyncWrapper(removeContactController));
 
