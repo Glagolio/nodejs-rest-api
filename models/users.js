@@ -39,7 +39,14 @@ const loginUser = async (email, password) => {
   return token;
 };
 
+const patchSubscriptionUser = async (id, subscription) => {
+  await User.findByIdAndUpdate(id, { subscription }, { runValidators: true });
+  const updatedUser = await User.findById(id).select({ password: 0 });
+  return updatedUser;
+};
+
 module.exports = {
   signupUser,
   loginUser,
+  patchSubscriptionUser,
 };

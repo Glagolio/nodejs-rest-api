@@ -9,8 +9,8 @@ const {
 
 const listContactsController = async (req, res) => {
   const { _id } = req.user;
-  const { page, limit } = req.query;
-  const contacts = await listContacts(_id, page, limit);
+  const { page, limit, favorite } = req.query;
+  const contacts = await listContacts(_id, page, limit, favorite);
   res.status(200).json({ message: 'success', code: 200, contacts });
 };
 

@@ -1,11 +1,20 @@
 const { Contact } = require('../db/contactModel');
 
-const listContacts = async (owner, page, limit) => {
+const listContacts = async (owner, page, limit, favorite) => {
+  console.log(favorite);
   const skip = (parseInt(page) - 1) * parseInt(limit);
-  const data = await Contact.find({ owner }).skip(skip).limit(parseInt(limit));
 
-  return data;
+  if (favorite) {
+    const data = await Contact.find({ $and: [{ owner }, { favorite: JSON.parse(favorite) }] })
+      .skip(skip)
+      .limit(parseInt(limit));
+    return data;
+  } else {
+    const data = await Contact.find({ owner }).skip(skip).limit(parseInt(limit));
+    return data;
+  }
 };
+
 const getContactById = async (contactId, owner) => {
   const data = await Contact.find({ $and: [{ owner }, { _id: contactId }] });
   return data;
