@@ -1,4 +1,4 @@
-const { signupUser, loginUser, patchSubscriptionUser } = require('../models/users');
+const { signupUser, loginUser, patchSubscriptionUser, getCurrentUser } = require('../models/users');
 
 const signupUserController = async (req, res) => {
   const { email, password } = req.body;
@@ -23,8 +23,17 @@ const patchSubscriptionUserController = async (req, res) => {
   res.status(200).json({ message: 'success', user: updatedUser });
 };
 
+const getCurrentUserController = async (req, res) => {
+  const { _id } = req.user;
+
+  const user = await getCurrentUser(_id);
+
+  res.status(200).json({ status: 'success', user });
+};
+
 module.exports = {
   signupUserController,
   loginUserController,
   patchSubscriptionUserController,
+  getCurrentUserController,
 };
