@@ -4,12 +4,12 @@ const listContacts = async (owner, page, limit, favorite) => {
   const skip = (parseInt(page) - 1) * parseInt(limit);
 
   if (favorite) {
-    const data = await Contact.find({ $and: [{ owner }, { favorite: JSON.parse(favorite) }] })
+    const data = await Contact.find({ $and: [{ owner }, { favorite }] })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(limit);
     return data;
   } else {
-    const data = await Contact.find({ owner }).skip(skip).limit(parseInt(limit));
+    const data = await Contact.find({ owner }).skip(skip).limit(limit);
     return data;
   }
 };
