@@ -1,7 +1,6 @@
 const { Contact } = require('../db/contactModel');
 
 const listContacts = async (owner, page, limit, favorite) => {
-  console.log(favorite);
   const skip = (parseInt(page) - 1) * parseInt(limit);
 
   if (favorite) {
