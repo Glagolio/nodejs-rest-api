@@ -1,4 +1,5 @@
 const { signupUser, loginUser, patchSubscriptionUser, getCurrentUser } = require('../models/users');
+const { User } = require('../db/userModel');
 
 const signupUserController = async (req, res) => {
   const { email, password } = req.body;
@@ -31,9 +32,17 @@ const getCurrentUserController = async (req, res) => {
   res.status(200).json({ status: 'success', user });
 };
 
+const logoutUserController = async (req, res) => {
+  const { _id } = req.user;
+
+  await User.findByIdAndUpdate(_id, { token: null }, { runValidators: true });
+  res.status(200).json({ message: 'Success logout' });
+};
+
 module.exports = {
   signupUserController,
   loginUserController,
   patchSubscriptionUserController,
   getCurrentUserController,
+  logoutUserController,
 };
