@@ -40,8 +40,11 @@ const loginUser = async (email, password) => {
 };
 
 const patchSubscriptionUser = async (id, subscription) => {
-  await User.findByIdAndUpdate(id, { subscription }, { runValidators: true });
-  const updatedUser = await User.findById(id).select({ email: 1, subscription: 1, _id: 0 });
+  const updatedUser = await User.findByIdAndUpdate(
+    id,
+    { subscription },
+    { runValidators: true, new: true }
+  ).select({ email: 1, subscription: 1, _id: 0 });
   return updatedUser;
 };
 
