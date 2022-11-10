@@ -1,3 +1,6 @@
+const Jimp = require('jimp');
+const path = require('path');
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { User } = require('../db/userModel');
@@ -52,10 +55,6 @@ const getCurrentUser = async id => {
   const data = await User.findById(id).select({ email: 1, subscription: 1, _id: 0 });
   return data;
 };
-
-const Jimp = require('jimp');
-const path = require('path');
-const fs = require('fs');
 
 const uploadUserAvatar = async (userId, filename, originalUrl) => {
   Jimp.read(path.resolve(`./tmp/${filename}`), (err, avatar) => {
