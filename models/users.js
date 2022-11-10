@@ -56,7 +56,7 @@ const getCurrentUser = async id => {
   return data;
 };
 
-const uploadUserAvatar = async (userId, filename, originalUrl) => {
+const uploadUserAvatar = async (userId, filename) => {
   Jimp.read(path.resolve(`./tmp/${filename}`), (err, avatar) => {
     if (err) throw err;
     avatar

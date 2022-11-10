@@ -48,8 +48,7 @@ const logoutUserController = async (req, res) => {
 const patchUserAvatarController = async (req, res) => {
   const { filename } = req.file;
   const { _id } = req.user;
-  const { originalUrl } = req;
-  const updatedUser = await uploadUserAvatar(_id, filename, originalUrl);
+  const updatedUser = await uploadUserAvatar(_id, filename);
 
   res.status(200).json({ status: 'success', user: updatedUser });
 };
