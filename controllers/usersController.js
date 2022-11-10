@@ -1,4 +1,10 @@
-const { signupUser, loginUser, patchSubscriptionUser, getCurrentUser } = require('../models/users');
+const {
+  signupUser,
+  loginUser,
+  patchSubscriptionUser,
+  getCurrentUser,
+  uploadUserAvatar,
+} = require('../models/users');
 const { User } = require('../db/userModel');
 
 const signupUserController = async (req, res) => {
@@ -39,10 +45,20 @@ const logoutUserController = async (req, res) => {
   res.status(200).json({ message: 'Success logout' });
 };
 
+const patchUserAvatarController = async (req, res) => {
+  const { filename } = req.file;
+  const { _id } = req.user;
+  const { originalUrl } = req;
+  const updatedUser = await uploadUserAvatar(_id, filename, originalUrl);
+
+  res.status(200).json({ status: 'success', user: updatedUser });
+};
+
 module.exports = {
   signupUserController,
   loginUserController,
   patchSubscriptionUserController,
   getCurrentUserController,
   logoutUserController,
+  patchUserAvatarController,
 };

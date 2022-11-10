@@ -50,9 +50,43 @@ const getCurrentUser = async id => {
   return data;
 };
 
+const Jimp = require('jimp');
+const path = require('path');
+const fs = require('fs');
+
+const uploadUserAvatar = async (userId, filename, originalUrl) => {
+  Jimp.read(path.resolve(`./tmp/${filename}`), (err, avatar) => {
+    if (err) throw err;
+    avatar
+      .resize(250, 250)
+      .quality(60)
+      .greyscale()
+      .write(path.resolve(`./public/avatars/${filename}`));
+  });
+
+  // ===================== Remove avatar-file form foulder tmp ==================
+  fs.unlink(path.resolve(`./tmp/${filename}`), err => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  });
+  // ==============================================================================
+
+  const avatarURL = `avatars/${filename}`;
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { avatarURL },
+    { runValidators: true, new: true }
+  ).select({ avatarURL: 1, _id: 0 });
+  return updatedUser;
+};
+
 module.exports = {
   signupUser,
   loginUser,
   patchSubscriptionUser,
   getCurrentUser,
+  uploadUserAvatar,
 };
