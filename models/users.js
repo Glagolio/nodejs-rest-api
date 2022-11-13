@@ -4,23 +4,59 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { User } = require('../db/userModel');
-const { RegistrationConflictError, LoginAuthError } = require('../helpers/errors');
+const {
+  RegistrationConflictError,
+  LoginAuthError,
+  VerificationError,
+} = require('../helpers/errors');
+const { v4: uuidv4 } = require('uuid');
+// const sgMail = require('@sendgrid/mail');
+require('dotenv').config();
+
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const nodemailer = require('nodemailer');
+
+const config = {
+  host: 'smtp.meta.ua',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'glagolio@meta.ua',
+    pass: process.env.MAIL_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+};
+const transporter = nodemailer.createTransport(config);
 
 const signupUser = async (email, password) => {
   if (await User.findOne({ email })) {
     throw new RegistrationConflictError('Email is use');
   }
 
+  const verificationToken = uuidv4();
+
   const user = new User({
     email,
     password,
+    verificationToken,
   });
 
   await user.save();
+
+  const emailOptions = {
+    from: 'glagolio@meta.ua',
+    to: email,
+    subject: 'Please verify your email address with this token',
+    text: `Please verify your email address: http://localhost:3001/users/verify/${verificationToken}`,
+  };
+  await transporter.sendMail(emailOptions).catch(err => console.log(err));
+
   return user;
 };
 const loginUser = async (email, password) => {
-  const user = await User.findOne({ email });
+  const user = await User.find({ email, varify: true });
 
   if (!user) {
     throw new LoginAuthError('Email or password is wrong');
@@ -85,10 +121,31 @@ const uploadUserAvatar = async (userId, filename) => {
   return updatedUser;
 };
 
+const verificationUser = async verificationToken => {
+  const user = await User.findOne({ verificationToken });
+  if (!user) {
+    throw new VerificationError('Not found');
+  }
+
+  user.verificationToken = 'null';
+  user.verify = true;
+  console.log(user);
+  await user.save();
+
+  const emailOptions = {
+    from: 'glagolio@meta.ua',
+    to: user.email,
+    subject: 'Thank you for verifycation',
+    text: `Well done. You profile verified.`,
+  };
+  await transporter.sendMail(emailOptions).catch(err => console.log(err));
+};
+
 module.exports = {
   signupUser,
   loginUser,
   patchSubscriptionUser,
   getCurrentUser,
   uploadUserAvatar,
+  verificationUser,
 };

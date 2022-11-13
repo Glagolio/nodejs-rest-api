@@ -4,6 +4,7 @@ const {
   patchSubscriptionUser,
   getCurrentUser,
   uploadUserAvatar,
+  verificationUser,
 } = require('../models/users');
 const { User } = require('../db/userModel');
 
@@ -53,6 +54,13 @@ const patchUserAvatarController = async (req, res) => {
   res.status(200).json({ status: 'success', user: updatedUser });
 };
 
+const verifictaionUserController = async (req, res) => {
+  const { verificationToken } = req.params;
+
+  await verificationUser(verificationToken);
+  res.starus(200).json({ message: 'Verification successful' });
+};
+
 module.exports = {
   signupUserController,
   loginUserController,
@@ -60,4 +68,5 @@ module.exports = {
   getCurrentUserController,
   logoutUserController,
   patchUserAvatarController,
+  verifictaionUserController,
 };

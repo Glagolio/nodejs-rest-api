@@ -6,6 +6,7 @@ const {
   getCurrentUserController,
   logoutUserController,
   patchUserAvatarController,
+  verifictaionUserController,
 } = require('../../controllers/usersController');
 const { asyncWrapper } = require('../../helpers/apiHelpers');
 const { loginValidation } = require('../../middlewares/validationLoginMiddlware');
@@ -25,6 +26,8 @@ router.get('/current', authMiddleware, asyncWrapper(getCurrentUserController));
 router.patch('/', authMiddleware, asyncWrapper(patchSubscriptionUserController));
 
 router.get('/avatars/:avatarId', express.static('./public/avatars'));
+
+router.get('/verify/:verificationToken', verifictaionUserController);
 
 router.patch(
   '/avatars',
