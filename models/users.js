@@ -8,6 +8,7 @@ const {
   RegistrationConflictError,
   LoginAuthError,
   VerificationError,
+  BadRequestError,
 } = require('../helpers/errors');
 const { v4: uuidv4 } = require('uuid');
 // const sgMail = require('@sendgrid/mail');
@@ -20,8 +21,9 @@ const config = {
   host: 'smtp.meta.ua',
   port: 465,
   secure: true,
+  pool: true,
   auth: {
-    user: 'glagolio@meta.ua',
+    user: process.env.EMAIL_ADDRESS,
     pass: process.env.MAIL_PASSWORD,
   },
   tls: {
@@ -46,9 +48,9 @@ const signupUser = async (email, password) => {
   await user.save();
 
   const emailOptions = {
-    from: 'glagolio@meta.ua',
+    from: process.env.EMAIL_ADDRESS,
     to: email,
-    subject: 'Please verify your email address with this token',
+    subject: 'Please verify your email address',
     text: `Please verify your email address: http://localhost:3001/users/verify/${verificationToken}`,
   };
   await transporter.sendMail(emailOptions).catch(err => console.log(err));
@@ -124,19 +126,34 @@ const uploadUserAvatar = async (userId, filename) => {
 const verificationUser = async verificationToken => {
   const user = await User.findOne({ verificationToken });
   if (!user) {
-    throw new VerificationError('Not found');
+    throw new BadRequestError('Bad reques');
   }
 
-  user.verificationToken = 'null';
+  user.verificationToken = null;
   user.verify = true;
-  console.log(user);
   await user.save();
 
   const emailOptions = {
-    from: 'glagolio@meta.ua',
+    from: process.env.EMAIL_ADDRESS,
     to: user.email,
     subject: 'Thank you for verifycation',
     text: `Well done. You profile verified.`,
+  };
+  await transporter.sendMail(emailOptions).catch(err => console.log(err));
+};
+
+const repeatedVerifictaionUser = async email => {
+  const user = await User.findOne({ email, varify: false });
+  if (!user) {
+    throw new VerificationError('Not found');
+  }
+
+  const { verificationToken } = user;
+  const emailOptions = {
+    from: process.env.EMAIL_ADDRESS,
+    to: email,
+    subject: 'Please verify your email address',
+    text: `Please verify your email address: http://localhost:3001/users/verify/${verificationToken}`,
   };
   await transporter.sendMail(emailOptions).catch(err => console.log(err));
 };
@@ -148,4 +165,5 @@ module.exports = {
   getCurrentUser,
   uploadUserAvatar,
   verificationUser,
+  repeatedVerifictaionUser,
 };
