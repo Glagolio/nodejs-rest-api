@@ -11,10 +11,8 @@ const {
   BadRequestError,
 } = require('../helpers/errors');
 const { v4: uuidv4 } = require('uuid');
-// const sgMail = require('@sendgrid/mail');
 require('dotenv').config();
 
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const nodemailer = require('nodemailer');
 
 const config = {
