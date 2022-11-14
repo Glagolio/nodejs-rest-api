@@ -69,7 +69,7 @@ const repeatedVerifictaionUserController = async (req, res) => {
   }
 
   await repeatedVerifictaionUser(email);
-  res.status(400).json({ message: 'missing required field email' });
+  res.status(200).json({ message: 'Verification email sent' });
 };
 
 module.exports = {
